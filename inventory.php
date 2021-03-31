@@ -709,14 +709,106 @@ function _fiche_ligne(&$db, &$user, &$langs, &$inventory, &$TInventory, &$form, 
 
 }
 
+/**
+ * @param int $rank
+ */
+function increaseRank(&$rank){
+	$rank++;
+	return $rank;
+}
+
 function exportCSV(&$inventory) {
-	global $conf, $db, $hookmanager;
+	global $conf, $db, $hookmanager,$langs;
 
 	header('Content-Type: application/octet-stream');
     header('Content-disposition: attachment; filename=inventory-'. $inventory->getId().'-'.date('Ymd-His').'.csv');
     header('Pragma: no-cache');
     header('Cache-Control: no-store, no-cache, must-revalidate, post-check=0, pre-check=0');
     header('Expires: 0');
+
+	$rank = 0;
+
+
+    $TCols = array(
+    		'ref' => array(
+    			'label' => $langs->trans('Ref'),
+    			'rank' => increaseRank($rank),
+				'status' => true
+			),
+    		'Label' => array(
+    			'label' => $langs->trans('ProductName'),
+    			'rank' => increaseRank($rank),
+				'status' => true
+			),
+    		'Warehouse' => array(
+    			'label' => $langs->trans('Warehouse'),
+    			'rank' => increaseRank($rank),
+				'status' => true
+			),
+    		'Lot' => array(
+    			'label' => $langs->trans('Batch'),
+    			'rank' => increaseRank($rank),
+				'status' => $inventory->per_batch
+			),
+    		'barcode' => array(
+    			'label' => $langs->trans('Barcode'),
+    			'rank' => increaseRank($rank),
+				'status' => true
+			),
+		    // Bloc en base de donnée
+    		'qty' => array(
+    			'label' => $langs->trans('Qty'),
+    			'rank' => increaseRank($rank),
+				'status' => true
+			),
+    		'pmp' => array(
+    			'label' => $langs->trans('PMP'),
+    			'rank' => increaseRank($rank),
+				'status' => true
+			),
+    		'lastWholesalePrice' => array( // dernier PA
+    			'label' => $langs->trans('LastWholesalePrice'),
+    			'rank' => increaseRank($rank),
+				'status' => true
+			),
+    		'currentWholesalePrice' => array( // PA courant;
+    			'label' => $langs->trans('CurrentWholesalePrice'),
+    			'rank' => increaseRank($rank),
+				'status' => !empty($conf->global->INVENTORY_USE_MIN_PA_IF_NO_LAST_PA)
+			),
+    		// Bloc inventaire
+			'inventoryQty' => array(
+				'label' => $langs->trans('InventoryQty'),
+				'rank' => increaseRank($rank),
+				'status' => true
+			),
+			'inventoryPmp' => array(
+				'label' => $langs->trans('InventoryPMP'),
+				'rank' => increaseRank($rank),
+				'status' => true
+			),
+			'inventoryLastWholesalePrice' => array( // dernier PA
+				'label' => $langs->trans('InventoryLastWholesalePrice'),
+				'rank' => increaseRank($rank),
+				'status' => true
+			),
+			'inventoryCurrentWholesalePrice' => array( // PA courant;
+				'label' => $langs->trans('InventoryCurrentWholesalePrice'),
+				'rank' => increaseRank($rank),
+				'status' => !empty($conf->global->INVENTORY_USE_MIN_PA_IF_NO_LAST_PA)
+			),
+			'inventoryQtyRegulated' => array( // PA courant;
+				'label' => $langs->trans('InventoryQtyRegulated'),
+				'rank' => increaseRank($rank),
+				'status' => true
+			),
+	);
+
+
+    //	echo ';PMP;dernier PA;';
+    //	if(!empty($conf->global->INVENTORY_USE_MIN_PA_IF_NO_LAST_PA)) echo 'PA courant;';
+    //	echo 'qty regulée;';
+
 
 	echo 'Ref;Label;';
 	if($inventory->per_batch) echo 'Lot;';
